@@ -2,5 +2,5 @@
 ## Projetos Kaggle
 
 ### Equipe
-  * Ricardo Galiardi
-  * Wanderson Henrique dos Santos
+  * Ricardo Galiardi [GitHub](https://www.linkedin.com/in/rgaliardi/)
+  * Wanderson Henrique dos Santos [GitHub](https://www.linkedin.com/in/wandersonhenrique/)
