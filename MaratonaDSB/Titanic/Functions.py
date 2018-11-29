@@ -10,56 +10,65 @@ _sex = {'female': 0, 'male': 1}
 _fare_points = [-999999, 0,10,30,60,999999]
 _fare = {"Inferior": 0, "Basic": 1, "Superior": 2, "Executive": 3}
 _embarked = {'S': 0, 'C': 1, 'Q': 2}
+_cabin = {'A': 0, 'C': 1, 'B': 2, 'E': 3, 'D': 4, 'G': 5, 'F': 6, 'U': 7, 'T': 8}
 _score = {"a": 1, "c": 3, "b": 3, "e": 1, "d": 2, "g": 2, 
          "f": 4, "i": 1, "h": 4, "k": 5, "j": 8, "m": 3, 
          "l": 1, "o": 1, "n": 1, "q": 10, "p": 3, "s": 1, 
          "r": 1, "u": 1, "t": 1, "w": 4, "v": 4, "y": 4, 
          "x": 8, "z": 10}
+_title = {"Capt": 0, "Col": 1, "Major": 2, "Jonkheer": 3, "Don": 4, "Sir" : 5, "Dr": 6, 
+          "Rev": 7, "the Countess": 8, "Mme": 9, "Mlle": 10, "Ms": 11, "Mr" : 12, "Mrs": 13, 
+          "Miss": 14, "Master": 15, "Lady": 16}
 
 # Convert texto para um score por letra
 def setLetter(data, column):
-    data[column] = data[column].str.lower().map(_score).astype(int)
+    data[column + '_'] = data[column].str.lower().map(_score).astype(int)
 
 # Convert texto titulo para número
-def setTitle(data, column):
-    data[column] = data[column].fillna(0)
+def setTitle(data, column, title):
     if data[column].any():
-        data[column] = data[column].map(_title).astype(int)
+        data[title] = data[column].map(lambda name:name.split(',')[1].split('.')[0].strip())
+        data[title] = data[title].map(_title)
     
 # Convert texto embarque para número
 def setEmbarked(data, column):
     if data[column].any():
-        data[column] = data[column].map(_embarked).astype(int)
+        data[column + '_'] = data[column].map(_embarked).astype(int)
+          
+# Convert texto cabine para número
+def setCabin(data, column):
+    if data[column].any():
+        data[column + '_'] = data[column].map(_cabin).astype(int)       
     
 # Convert texto sexo para número
 def setSex(data, column):
     if data[column].any():
-        data[column] = data[column].map(_sex).astype(int)
+        data[column + '_'] = data[column].map(_sex).astype(int)
     
 # Convert valor da tarifa
 def setFare(data, column):
     data[column] = data[column].fillna(0)
     if data[column].any():
-        data[column] = pd.cut(data[column], _fare_points, labels=False)
+        data[column + '_'] = pd.cut(data[column], _fare_points, labels=False)
     
 # Convert classes de idades
 def setAge(data, column):
-    data[column] = data[column].fillna(0.5)
+    data[column] = data[column].fillna(-0.5)
     if data[column].any():
-        data[column] = pd.cut(data[column], _age_points, labels=False)
-
+        data[column + '_'] = pd.cut(data[column], _age_points, labels=False)  
+    
 # Converte o nome para o título
 def getTitle(name):
     search = re.search(' ([A-Za-z]+)\.', name)
     if search:
         return search.group(1)
     return ""
-    
+       
 # Verifica a correlação entre as variáveis
 def getCorr(data):
     #sns.heatmap(data.corr(), cmap='BuGn')
     colormap = plt.cm.viridis
-    plt.figure(figsize=(12,12))
+    plt.figure(figsize=(64,64))
     plt.title('Correlation between Features', y=1.05, size = 15)
     sns.heatmap(data.corr(),
                 linewidths=0.1, 
@@ -68,6 +77,23 @@ def getCorr(data):
                 cmap=colormap, 
                 linecolor='white', 
                 annot=True)
+    
+def correlation_heatmap(data):
+    _ , ax = plt.subplots(figsize =(14, 12))
+    colormap = sns.diverging_palette(220, 10, as_cmap = True)
+    
+    _ = sns.heatmap(
+        data.corr(), 
+        cmap = colormap,
+        square=True, 
+        cbar_kws={'shrink':.9 }, 
+        ax=ax,
+        annot=True, 
+        linewidths=0.1,vmax=1.0, linecolor='white',
+        annot_kws={'fontsize':12 }
+    )
+    
+    plt.title('Pearson Correlation of Features', y=1.05, size=15)    
     
 # Cria um relatório do tipo Scatter
 def scatter(data, field, column):
