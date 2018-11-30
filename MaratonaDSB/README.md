@@ -1,5 +1,5 @@
 #  Maratona Data Science Brasil - 2018
-## Projetos Kaggle
+## Projetos Kaggle - Titanic
 
 ### Equipe
   * Ricardo Galiardi              	- [Linkedin](https://www.linkedin.com/in/rgaliardi/)
