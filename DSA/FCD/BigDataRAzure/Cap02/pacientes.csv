@@ -1,0 +1,8 @@
+ID,Nome,Idade,Admdate,Diabete,Status
+1,Paciente 1,43,15/10/2015,Tipo 1,Ruim
+2,Paciente 2,23,16/10/2015,Tipo 2,Bom
+3,Paciente 3,56,23/10/2015,Tipo 2,Bom
+4,Paciente 4,34,24/10/2015,Tipo 1,Ruim
+5,Paciente 5,38,31/10/2015,Tipo 1,Medio
+6,Paciente 6,37,28/10/2015,Tipo 1,Bom 
+7,Paciente 7,41,27/10/2015,Tipo 1,Ruim

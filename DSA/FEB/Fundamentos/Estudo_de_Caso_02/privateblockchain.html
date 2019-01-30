@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html style =' overflow: hidden;height:100%; width:100%;'>
+    <head>
+        <style>
+            .slidecontainer {
+                width: 100%; 
+            }
+
+            .slider {
+                -webkit-appearance: none;  
+                appearance: none;
+                width: 100%; 
+                height: 25px; 
+                background: #d3d3d3; 
+                outline: none; 
+                opacity: 0.7; 
+                -webkit-transition: .2s; 
+                transition: opacity .2s;
+            }
+
+            .slider:hover {
+                opacity: 1; 
+            }
+
+            .slider::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                appearance: none;
+                width: 25px; 
+                height: 25px; 
+                background: #4CAF50;
+                cursor: pointer;
+            }
+
+            .slider::-moz-range-thumb {
+                width: 25px; 
+                height: 25px; 
+                background: #4CAF50; 
+                cursor: pointer; 
+            }
+
+            #block{
+                text-align: center;
+            }
+
+
+            .blocks{
+                width: 60%;
+                border-radius: 20px;
+                height: 50px;
+                background-color: azure;
+                /* margin: auto; */
+                margin-bottom: 5px;
+                text-align: center;
+                
+                
+            }
+            .Cont{
+                display: none;
+                background-color: snow;
+                text-align: center;
+            }
+
+            
+
+            
+        </style>
+        <title>Primeira Blockchain</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+        <script>
+
+
+                function getBlocks(){
+                    var Block_ac =  document.getElementById('block').value;
+                    if (Block_ac.length == 0){
+                        console.log('ERROR')
+                    }else{
+                    $.get("http://127.0.0.1:8080/blocks",{"Block":Block_ac}, function(data){
+                        
+                        if(data.Block != "Valid"){
+                           
+                            document.getElementById('Val').style.cssText = "color: red;"; 
+                        }else{
+                            document.getElementById('Val').style.cssText = "color: green;"; 
+                        }
+                        document.getElementById('Val').innerText = data.Block;
+                        
+                        //console.log();
+                        console.log('Block return')
+
+                    }).done(function() {
+                        //alert( "second success" );
+                    })
+                    .fail(function() {
+                        //alert( "error" );
+
+                    })
+                    .always(function() {
+                        //alert( "finished" );
+                    });
+
+                };
+            };
+            var Reconstuct = false;
+            function getChain(){
+                    $.get("http://127.0.0.1:8080/chain", function(data){
+                        data.chain.sort(function(a, b) {
+                        return a.key - b.key;
+                    });
+                    if (Reconstuct == true){
+                        var myNode = document.getElementById("blockContain");
+                        while (myNode.firstChild) {
+                            myNode.removeChild(myNode.firstChild);
+                        }
+
+                    }
+                    for(var a = 0; a < data.chain.length; a++){
+
+                        var BlockPlace = document.getElementById('blockContain');
+                        var Top = document.createElement("button");
+                        var number = document.createElement('div');
+                        
+                        number.setAttribute("class","Cont");
+                        number.setAttribute("id","Cont"+data.chain[a].key);
+                        Top.setAttribute("id", "block"+data.chain[a].key);
+                        Top.setAttribute("onclick","OpenClose(event)");
+                        Top.setAttribute('class','blocks');
+                        
+                        var blocknumber = document.createTextNode("Block "+data.chain[a].key);
+                        var Format = JSON.parse(data.chain[a].value);
+                        var Hash = document.createTextNode('Hash: '+Format.hash);
+                        var HashP = document.createElement('p');
+                        HashP.appendChild(Hash);
+                        var Height = document.createTextNode('Height: '+Format.height);
+                        var HeightP = document.createElement('p');
+                        HeightP.appendChild(Height);
+                        var Body = document.createTextNode('Body: '+Format.body);
+                        var BodyP = document.createElement('p');
+                        BodyP.appendChild(Body);
+                        var Time = document.createTextNode('Time: '+Format.time);
+                        var TimeP = document.createElement('p');
+                        TimeP.appendChild(Time);
+                        var PrevHash = document.createTextNode( 'PreviousBlockHash: '+Format.previousBlockHash);
+                        var PrevHashP = document.createElement('p');
+                        PrevHashP.appendChild(PrevHash);
+                        number.appendChild(HashP);
+                        number.appendChild(HeightP);
+                        number.appendChild(BodyP);
+                        number.appendChild(TimeP);
+                        number.appendChild(PrevHashP);
+                        Top.appendChild(blocknumber);
+                        
+                        BlockPlace.append(Top);
+                        BlockPlace.append(number);
+                        Reconstuct = true;
+                    };
+                    
+                
+
+                    }).done(function() {
+                        //alert( "second success" );
+                    })
+                    .fail(function() {
+                        //alert( "error" );
+
+                    })
+                    .always(function() {
+                        //alert( "finished" );
+                    });
+
+                }
+            
+                function ValidateChain(){
+                    $.get("http://127.0.0.1:8080/valchain", function(data){
+                        console.log(data)
+                        
+                        if(data.chain != "CHAIN VALID"){
+                           
+                           document.getElementById('CVal').style.cssText = "color: red;"; 
+                       }else{
+                           document.getElementById('CVal').style.cssText = "color: green;"; 
+                       }
+                       document.getElementById('CVal').innerText = data.chain;
+                       
+                       console.log('Block return')
+                        console.log(data)
+                    }).done(function() {
+                        //alert( "second success" );
+                    })
+                    .fail(function() {
+                        alert( "error" );
+
+                    })
+                    .always(function() {
+                        //alert( "finished" );
+                    });
+
+                }
+
+                function GetHeight(){
+                    $.get("http://127.0.0.1:8080/height", function(data){
+                        
+                        console.log(data);
+                        document.getElementById('HI').innerText = data.Height
+                    })
+                }
+
+
+                function BlockAdder(){
+                    var Amount = document.getElementById("amount").value;
+                    var Time = document.getElementById("time").value;
+                    $.post("http://127.0.0.1:8080/addblock",{"amount":Amount,"timing":Time * 1000}, function(data){
+
+                        console.log(data);
+                    })
+                };
+                function ChangeBlock(){
+                    var hash = document.getElementById("hashout").value;
+                    var height = document.getElementById("heightout").value;
+                    var body = document.getElementById("bodyout").value;
+                    var time = document.getElementById("timeout").value;
+                    var PBH = document.getElementById("PBH").value;
+                    
+                    $.post("http://127.0.0.1:8080/Change",{"hash":hash,"height":height,"body":body,"time":time,"previousBlockHash":PBH}, function(data){
+                    })
+                }
+                var inde = false;
+                function GetBlock(){
+                    var num = document.getElementById("BlockNumber").value;
+                    $.get("http://127.0.0.1:8080/singleBlock",{"SingleB":num}, function(data){
+                        
+                        console.log(data);
+                        bobj = JSON.parse(data.Block);
+                        
+                        var Md = document.getElementById("blockViewer");
+                        if (inde == true){
+                            while (Md.firstChild) {
+                                Md.removeChild(Md.firstChild);
+                        }
+                        }
+                        var hasht = document.createTextNode('Hash ')
+                        var hashin = document.createElement('input');
+                        hashin.setAttribute("value", bobj.hash);
+                        hashin.setAttribute("style","width: 90%;")
+                        hashin.setAttribute("id","hashout")
+                        var hashp = document.createElement('p');
+                        hashp.appendChild(hasht);
+                        hashp.appendChild(hashin);
+
+                        var heightt = document.createTextNode('Height ');
+                        var heightp = document.createElement('p');
+                        var heightin = document.createElement('input');
+                        heightin.setAttribute("value", bobj.height);
+                        heightin.setAttribute("style","width: 90%;");
+                        heightin.setAttribute("id","heightout");
+                        heightp.appendChild(heightt);
+                        heightp.appendChild(heightin);
+                    
+                        var bodyt = document.createTextNode('Body ');
+                        var bodyp = document.createElement('p');
+                        var bodyin = document.createElement('input');
+                        bodyin.setAttribute("value", bobj.body);
+                        bodyin.setAttribute("style","width: 90%;");
+                        bodyin.setAttribute("id","bodyout");
+                        bodyp.appendChild(bodyt);
+                        bodyp.appendChild(bodyin);
+
+                        var timet = document.createTextNode('Time ');
+                        var timep = document.createElement('p');
+                        var timein = document.createElement('input');
+                        timein.setAttribute("value", bobj.time);
+                        timein.setAttribute("style","width: 90%;");
+                        timein.setAttribute("id","timeout");
+                        timep.appendChild(timet);
+                        timep.appendChild(timein);
+
+                        var PrevHasht = document.createTextNode('PrevHash ');
+                        var PrevHashp = document.createElement('p');
+                        var previousBlockHashin = document.createElement('input');
+                        previousBlockHashin.setAttribute("value", bobj.previousBlockHash);
+                        previousBlockHashin.setAttribute("style","width:90%;")
+                        previousBlockHashin.setAttribute("id","PBH")
+                        PrevHashp.appendChild(PrevHasht);
+                        PrevHashp.appendChild(previousBlockHashin);
+
+                        var Sub = document.createElement('button');
+                        Sub.setAttribute("onclick","ChangeBlock()");
+                        var chan = document.createTextNode("Alterar o Bloco");
+                        Sub.appendChild(chan);
+
+                        Md.appendChild(hashp);
+                        Md.appendChild(heightp);
+                        Md.appendChild(bodyp);
+                        Md.appendChild(timep);
+                        Md.appendChild(PrevHashp);
+                        Md.appendChild(Sub);
+                        inde = true;
+
+
+                        
+                    })
+                }
+
+                var Elist = [];
+                function OpenClose(event) { 
+                        var EBox = event.target.id;
+                        var BN = EBox.slice(5, );
+                        var Creater = "Cont"+BN;
+                        console.log(Elist)
+                        if(Elist.length == 2){
+                            document.getElementById(Elist[0]).style.display = "none";
+                            Elist.splice(0,1);
+                        }
+                        document.getElementById(Creater).style.display = "Block";
+                        Elist.push(Creater);
+                        
+                        }
+                        
+                    
+              </script>
+    </head>
+<body style = '    font-family: sans-serif;margin: inherit;height:100%;width:100%; display: flex;'>
+
+<div id = 'BlockChain' style =' vertical-align: bottom; overflow-y: scroll;background-color: #7163f4; height: 100%;width:50%;'>
+        <button onclick = "getChain()" style="width: 100%;
+        height: 50px;
+        margin-bottom: 5px;">Blockchain</button>
+        <div id = 'blockContain' style="
+    background: #7da3ba;
+    margin: auto;
+    "> </div>
+    
+</div>
+<div style ='height:100%; width: 50%; overflow: scroll;'>
+
+    <div  style = 'background-color: #85c7f4; width: 100%'>
+        <div style = 'height: 25%;
+        text-align: center;
+        width: 100%;
+        border-bottom: solid black 2px;'>
+            <p style = 'margin: inherit;'>Validar Bloco</p>
+            <div style = "display: flex;"><p style = 'margin-right: 5px;margin-top: inherit; margin-bottom: inherit;'>Numero do Bloco:</p> <input type="text" id="block"><button onclick = "getBlocks()">Executar</button><br></div>
+            <div style = "display: flex;"><p style = 'margin-right: 5px;'>Status do Bloco:</p> <p id = 'Val'></p></div>
+        </div>
+        <div style = 'text-align: center;
+        width: 100%;
+        border-bottom: solid black 2px;'>
+        <p>Vaildar Blockchain</p>
+        <button onclick = "ValidateChain()">Executar</button>
+
+        <div style = "display: flex;"><p>Status da Blockchain:</p><p id = "CVal"></p></div>
+
+        </div>
+        <div style = 'text-align: center;
+        width: 100%;
+        border-bottom: solid black 2px;'>
+        <p> Adicionar Blockos </p>
+        <div>Total de blocos na chain <input id = "amount"> Intervalo de tempo para adicionar novos blocos<input id = "time"> <button onclick = "BlockAdder()">Adicionar Blocos</button></div>
+        </div>
+        <div style = 'text-align: center;
+        width: 100%;
+        border-bottom: solid black 2px;'>
+        <p>Height da Chain</p>
+        <button onclick="GetHeight()">Executar</button>
+        <div  style = "display: flex;"><p>Height:</p><p id = "HI"></p></div>
+        </div>
+    </div>
+
+    <div style = 'background-color: #8aaaff; width: 100%'>
+        <div style = 'text-align: center;
+        width: 100%;
+        border-bottom: solid black 2px;'>
+        <p style = "margin: inherit;">Obter Bloco</p>
+        <p style = "margin:inherit;">Alterar qualquer coisa no bloco vai invalidar a Blockchain!</p>
+        <div><p>Numero do Bloco</p><input id = "BlockNumber"></div>
+        <button onclick="GetBlock()">Buscar Bloco</button>
+        </div>
+        <div id = "blockViewer" style = 'text-align: center;
+        width: 100%;
+        border-bottom: solid black 2px;'>
+        </div>
+    </div>
+</div>
+
+</body>
+
+</html>
