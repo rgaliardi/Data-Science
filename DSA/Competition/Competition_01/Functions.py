@@ -132,6 +132,8 @@ def plot(data, field, column):
                 color='white')
     return ax
 
+#output for the section
+
 def output(output, dataset, filename, field1, field2):
     df_output = pd.DataFrame()
     df_output[field1] = dataset[field1].astype(int)
